@@ -422,19 +422,65 @@ data "archive_file" "lambda_zip" {
       table = dynamodb.Table(table_name)
 
       def lambda_handler(event, context):
-          # Inserta un registro de prueba en DynamoDB
-          table.put_item(
-              Item={
-                  'UserId': 'user_001',
-                  'Nombre': 'Crack DevOps',
+          # Encabezados CORS obligatorios para el navegador
+          headers = {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Headers': '*',
+              'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
+          }
+          
+          # Detectar el metodo HTTP (GET, POST, OPTIONS)
+          http_method = event.get('requestContext', {}).get('http', {}).get('method', 'GET')
+          
+          # 1. Manejo de Preflight CORS (Peticiones OPTIONS del navegador)
+          if http_method == 'OPTIONS':
+              return {
+                  'statusCode': 200,
+                  'headers': headers,
+                  'body': ''
+              }
+          
+          # 2. Consultar usuarios (Peticiones GET)
+          if http_method == 'GET':
+              response = table.scan()
+              items = response.get('Items', [])
+              return {
+                  'statusCode': 200,
+                  'headers': headers,
+                  'body': json.dumps(items)
+              }
+          
+          # 3. Insertar usuario desde el formulario (Peticiones POST)
+          if http_method == 'POST':
+              body_str = event.get('body', '{}')
+              payload = json.loads(body_str) if body_str else {}
+              
+              user_id = payload.get('id') or payload.get('UserId') or 'usr_default'
+              nombre = payload.get('nombre') or payload.get('Nombre') or 'Usuario Anonimo'
+              email = payload.get('email') or payload.get('Email') or 'sin-email@demo.com'
+              
+              item = {
+                  'UserId': user_id,
+                  'id': user_id,
+                  'nombre': nombre,
+                  'email': email,
+                  'Nombre': nombre,
                   'Status': 'Serverless Active'
               }
-          )
+              
+              table.put_item(Item=item)
+              
+              return {
+                  'statusCode': 200,
+                  'headers': headers,
+                  'body': json.dumps({'message': '¡Usuario registrado exitosamente!', 'item': item})
+              }
           
           return {
               'statusCode': 200,
-              'headers': {'Content-Type': 'application/json'},
-              'body': json.dumps({'message': '¡Registro insertado con exito en DynamoDB desde Lambda!'})
+              'headers': headers,
+              'body': json.dumps({'message': 'OK'})
           }
     EOF
     filename = "index.py"
@@ -476,6 +522,12 @@ output "lambda_function_name" {
 resource "aws_apigatewayv2_api" "http_api" {
   name          = "api-usuarios-dev"
   protocol_type = "HTTP"
+
+  cors_configuration {
+    allow_origins = ["*"]
+    allow_methods = ["GET", "POST", "OPTIONS"]
+    allow_headers = ["*"]
+  }
 
   tags = {
     Environment = "Lab"
