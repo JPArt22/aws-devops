@@ -3,91 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DevOps Cloud Incident Hub</title>
+  <title>Gestión de Usuarios - AWS DevOps</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans p-6">
-  <div class="max-w-5xl mx-auto space-y-8">
+  <div class="max-w-4xl mx-auto space-y-8">
     
     <!-- HEADER -->
-    <header class="flex justify-between items-center border-b border-slate-800 pb-5">
+    <header class="border-b border-slate-800 pb-5 flex justify-between items-center">
       <div>
-        <h1 class="text-3xl font-bold text-sky-400">⚡ DevOps Cloud Control Hub</h1>
-        <p class="text-slate-400 text-sm mt-1">Infraestructura: AWS ECS Fargate + API Gateway + Lambda + DynamoDB</p>
+        <h1 class="text-3xl font-bold text-sky-400">👤 Sistema de Gestión de Usuarios</h1>
+        <p class="text-slate-400 text-sm mt-1">AWS ECS Fargate ➔ API Gateway ➔ Lambda ➔ TablaUsuariosDev</p>
       </div>
-      <span class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs px-3 py-1 rounded-full font-medium">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Sistema En Línea
+      <span class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs px-3 py-1 rounded-full font-medium">
+        ● Activo
       </span>
     </header>
 
     <!-- CONFIGURACIÓN API -->
     <section class="bg-slate-800/60 border border-slate-700/50 p-4 rounded-xl">
       <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-        URL de tu API Gateway (Obtenida de Terraform):
+        URL de tu API Gateway:
       </label>
-      <input id="apiUrl" type="text" placeholder="https://xyz.execute-api.us-east-1.amazonaws.com/dev/items" 
-             class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-sky-300 focus:outline-none focus:border-sky-500 transition">
+      <input id="apiUrl" type="text" 
+             value="https://uotohpo144.execute-api.us-east-1.amazonaws.com/users"
+             class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-sky-300 focus:outline-none focus:border-sky-500">
     </section>
 
-    <!-- MÉTRICAS -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="bg-slate-800/40 border border-slate-800 p-5 rounded-xl">
-        <p class="text-xs text-slate-400 uppercase font-medium">Eventos Registrados</p>
-        <p id="totalCount" class="text-3xl font-bold text-white mt-2">0</p>
-      </div>
-      <div class="bg-slate-800/40 border border-slate-800 p-5 rounded-xl">
-        <p class="text-xs text-amber-400/80 uppercase font-medium">En Progreso / Críticos</p>
-        <p id="activeCount" class="text-3xl font-bold text-amber-400 mt-2">0</p>
-      </div>
-      <div class="bg-slate-800/40 border border-slate-800 p-5 rounded-xl">
-        <p class="text-xs text-emerald-400/80 uppercase font-medium">Servicios Desplegados</p>
-        <p class="text-3xl font-bold text-emerald-400 mt-2">ECS + Lambda</p>
-      </div>
-    </div>
-
-    <!-- FORMULARIO & LISTA -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- CONTENIDO -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       
       <!-- FORMULARIO -->
-      <div class="bg-slate-800/40 border border-slate-800 p-6 rounded-xl h-fit">
-        <h2 class="text-lg font-semibold text-white mb-4">📢 Registrar Evento Cloud</h2>
-        <form id="incidentForm" class="space-y-4">
+      <div class="bg-slate-800/40 border border-slate-800 p-6 rounded-xl">
+        <h2 class="text-lg font-semibold text-white mb-4">➕ Registrar Usuario</h2>
+        <form id="userForm" class="space-y-4">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Título del Evento / Tarea</label>
-            <input type="text" id="title" required placeholder="Ej. Despliegue de versión v1.2" 
+            <label class="block text-xs text-slate-400 mb-1">Nombre Completo</label>
+            <input type="text" id="nombre" required placeholder="Ej. Jhon Perez" 
                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
           </div>
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Servicio Afectado</label>
-            <select id="service" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
-              <option value="ECS Fargate">ECS Fargate</option>
-              <option value="DynamoDB">DynamoDB</option>
-              <option value="API Gateway">API Gateway</option>
-              <option value="GitHub Actions">GitHub Actions CI/CD</option>
-            </select>
+            <label class="block text-xs text-slate-400 mb-1">Correo Electrónico</label>
+            <input type="email" id="email" required placeholder="ejemplo@correo.com" 
+                   class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
           </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">Prioridad</label>
-            <select id="priority" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
-              <option value="Baja">🟢 Baja / Info</option>
-              <option value="Media">🟡 Media / Mantenimiento</option>
-              <option value="Alta">🔴 Alta / Incidente</option>
-            </select>
-          </div>
-          <button type="submit" class="w-full bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold py-2.5 rounded-lg text-sm transition duration-200">
-            Enviar a DynamoDB 🚀
+          <button type="submit" id="btnSubmit" class="w-full bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold py-2.5 rounded-lg text-sm transition duration-200">
+            Guardar en DynamoDB 🚀
           </button>
         </form>
       </div>
 
-      <!-- LISTADO -->
-      <div class="lg:col-span-2 space-y-4">
+      <!-- LISTADO DE USUARIOS -->
+      <div class="md:col-span-2 space-y-4">
         <div class="flex justify-between items-center">
-          <h2 class="text-lg font-semibold text-white">📋 Registros en Tiempo Real</h2>
-          <button onclick="fetchIncidents()" class="text-xs text-sky-400 hover:underline">🔄 Actualizar</button>
+          <h2 class="text-lg font-semibold text-white">📋 Usuarios en DynamoDB</h2>
+          <button onclick="fetchUsers()" class="text-xs text-sky-400 hover:underline">🔄 Cargar / Actualizar</button>
         </div>
-        <div id="incidentsList" class="space-y-3">
-          <p class="text-slate-500 text-sm italic">Ingresa tu URL de API Gateway para cargar los datos desde la nube...</p>
+        
+        <div id="usersList" class="space-y-3">
+          <p class="text-slate-500 text-sm italic">Haz clic en "Cargar / Actualizar" para consultar la base de datos.</p>
         </div>
       </div>
 
@@ -95,83 +69,88 @@
   </div>
 
   <script>
-    const form = document.getElementById('incidentForm');
+    const userForm = document.getElementById('userForm');
     const apiUrlInput = document.getElementById('apiUrl');
-    
-    // Guardar URL en localStorage para comodidad
-    apiUrlInput.value = localStorage.getItem('devops_api_url') || '';
-    apiUrlInput.addEventListener('change', () => {
-      localStorage.setItem('devops_api_url', apiUrlInput.value);
-      fetchIncidents();
-    });
+    const usersList = document.getElementById('usersList');
 
-    async function fetchIncidents() {
+    async function fetchUsers() {
       const url = apiUrlInput.value.trim();
-      if (!url) return;
+      if (!url) return alert("Ingresa la URL de la API");
+      
+      usersList.innerHTML = `<p class="text-sky-400 text-sm">Consultando DynamoDB...</p>`;
+
       try {
-        const res = await fetch(url);
+        const res = await fetch(url, { method: 'GET' });
+        if (!res.ok) throw new Error(`HTTP Error status: ${res.status}`);
+        
         const data = await res.json();
-        renderList(data);
+        renderUsers(data);
       } catch (err) {
-        console.error("Error consultando API:", err);
+        console.error(err);
+        usersList.innerHTML = `
+          <div class="bg-red-500/10 border border-red-500/30 text-red-400 p-4 rounded-xl text-sm">
+            <p class="font-bold">⚠️ Error de conexión (CORS / Red)</p>
+            <p class="text-xs mt-1">No se pudo contactar a la API. Verifica que la URL finalice en <code>/users</code>.</p>
+          </div>`;
       }
     }
 
-    function renderList(items) {
-      const list = document.getElementById('incidentsList');
-      document.getElementById('totalCount').innerText = items.length || 0;
-      
-      if (!items || items.length === 0) {
-        list.innerHTML = `<p class="text-slate-500 text-sm">No hay registros almacenados en DynamoDB aún.</p>`;
+    function renderUsers(items) {
+      // Normalizar respuesta si viene dentro de un 'body' parseado
+      const users = Array.isArray(items) ? items : (items.body ? JSON.parse(items.body) : []);
+
+      if (!users || users.length === 0) {
+        usersList.innerHTML = `<p class="text-slate-500 text-sm">No hay usuarios registrados en TablaUsuariosDev aún.</p>`;
         return;
       }
 
-      list.innerHTML = items.map(item => `
+      usersList.innerHTML = users.map(u => `
         <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-xl flex justify-between items-center">
           <div>
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-semibold px-2 py-0.5 rounded ${
-                item.priority === 'Alta' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-                item.priority === 'Media' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-              }">${item.priority || 'Info'}</span>
-              <h3 class="font-medium text-slate-100">${item.title || item.name || 'Sin título'}</h3>
-            </div>
-            <p class="text-xs text-slate-400 mt-1">Servicio: <span class="text-sky-400">${item.service || 'N/A'}</span> | ID: ${item.id}</p>
+            <h3 class="font-bold text-slate-100">${u.nombre || u.name || 'Sin nombre'}</h3>
+            <p class="text-xs text-slate-400 mt-0.5">${u.email || 'Sin email'}</p>
           </div>
+          <span class="text-xs font-mono text-slate-500 bg-slate-900 px-2 py-1 rounded">ID: ${u.id || 'N/A'}</span>
         </div>
       `).join('');
     }
 
-    form.addEventListener('submit', async (e) => {
+    userForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const url = apiUrlInput.value.trim();
-      if (!url) {
-        alert("Por favor pega primero tu URL de API Gateway arriba.");
-        return;
-      }
+      const btn = document.getElementById('btnSubmit');
 
-      const newItem = {
-        id: "evt-" + Date.now(),
-        title: document.getElementById('title').value,
-        service: document.getElementById('service').value,
-        priority: document.getElementById('priority').value
+      const payload = {
+        id: "usr-" + Date.now(),
+        nombre: document.getElementById('nombre').value,
+        email: document.getElementById('email').value
       };
 
+      btn.disabled = true;
+      btn.innerText = "Guardando...";
+
       try {
-        await fetch(url, {
+        const response = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newItem)
+          body: JSON.stringify(payload)
         });
-        document.getElementById('title').value = '';
-        fetchIncidents();
+
+        if (response.ok) {
+          alert("¡Usuario guardado exitosamente en DynamoDB!");
+          document.getElementById('nombre').value = '';
+          document.getElementById('email').value = '';
+          fetchUsers();
+        } else {
+          alert("Error al guardar. Status: " + response.status);
+        }
       } catch (err) {
-        alert("Error al guardar en DynamoDB: " + err.message);
+        alert("Error de envío (CORS o Red): " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Guardar en DynamoDB 🚀";
       }
     });
-
-    if (apiUrlInput.value) fetchIncidents();
   </script>
 </body>
 </html>
