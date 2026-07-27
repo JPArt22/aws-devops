@@ -552,10 +552,10 @@ resource "aws_apigatewayv2_integration" "lambda_integration" {
   payload_format_version = "2.0"
 }
 
-# 32. Ruta HTTP: GET /users
-resource "aws_apigatewayv2_route" "get_users_route" {
+# 32. Ruta HTTP Universal: Acepta GET, POST y OPTIONS en /users
+resource "aws_apigatewayv2_route" "users_route" {
   api_id    = aws_apigatewayv2_api.http_api.id
-  route_key = "GET /users"
+  route_key = "ANY /users" # 👈 ¡AQUÍ ESTABA EL CAMBIO CLAVE!
   target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
 }
 
